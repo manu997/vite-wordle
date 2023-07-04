@@ -6,7 +6,7 @@ interface RowProps {
   index: number;
 }
 
-const Row = ({index}: RowProps) => {
+const Row = ({ index }: RowProps) => {
   const [word, setWord] = useState<string[]>([]);
 
   const { wordAttemp } = useWordStore();
@@ -21,17 +21,19 @@ const Row = ({index}: RowProps) => {
   }, [wordAttemp]);
 
   const Layout = useMemo(() => {
-    return word.map((letter, index) => {
+    return word.map((letter, i) => {
       return (
         <div
-          key={index}
-          className="flex justify-center items-center border-2 border-gray-500 w-full gap-2 text-5xl text-gray-100 font-semibold"
+          key={i}
+          className={`flex justify-center items-center border-2 border-gray-500 w-full gap-2 text-5xl text-gray-100 font-semibold ${
+            activeRow === index && "border-[6px] border-gray-300 transition-all duration-300"
+          }`}
         >
           {letter}
         </div>
       );
     });
-  }, [word]);
+  }, [word, activeRow]);
 
   return <div className="flex flex-row gap-1 md:gap-2">{Layout}</div>;
 };

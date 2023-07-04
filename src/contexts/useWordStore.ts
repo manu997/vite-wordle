@@ -19,7 +19,6 @@ export const useWordStore = create<WordState>()((set, get) => ({
     }),
   pushOnWordAttemp: (letter) => {
     const pushLetter = [...get().wordAttemp];
-    console.log(pushLetter)
     pushLetter[pushLetter.indexOf("")] = letter;
     return set({ wordAttemp: [...pushLetter] });
   },
