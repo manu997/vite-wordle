@@ -2,6 +2,7 @@ import { useActiveRow } from "../contexts/useActiveRow";
 import { useWordStore } from "../contexts/useWordStore";
 import { useGameState } from "../contexts/useGameState";
 import { NUMBER_OF_TRIES } from "./GameLayout";
+import { useWinCounter } from "../contexts/useWinCounter";
 
 const Keyboard = () => {
   const keyLayout: string[][] = [
@@ -16,10 +17,13 @@ const Keyboard = () => {
 
   const { setGameState } = useGameState();
 
+  const { incrementCounter } = useWinCounter();
+
   const checkWord = () => {
     const wordToCheck = wordAttemp.join("");
 
     if (wordToCheck === word) {
+      incrementCounter();
       setGameState("win");
     } else if (activeRow === NUMBER_OF_TRIES - 1) {
       setGameState("lose");

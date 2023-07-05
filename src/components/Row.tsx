@@ -26,7 +26,8 @@ const Row = ({ index }: RowProps) => {
         <div
           key={i}
           className={`flex justify-center items-center border-2 border-gray-500 w-full gap-2 text-5xl text-gray-100 font-semibold ${
-            activeRow === index && "border-[6px] border-gray-300 transition-all duration-300"
+            activeRow === index &&
+            "border-[6px] border-gray-200 transition-all duration-300"
           }`}
         >
           {letter}
