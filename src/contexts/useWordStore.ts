@@ -12,7 +12,7 @@ interface WordState {
 export const useWordStore = create<WordState>()((set, get) => ({
   word: "",
   wordAttemp: new Array<string>(),
-  setWord: (newWord) => set({ word: newWord }),
+  setWord: (newWord) => set({ word: newWord.toUpperCase() }),
   setWordAttemp: () =>
     set({
       wordAttemp: new Array<string>(get().word.split("").length).fill(""),

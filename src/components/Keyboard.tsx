@@ -1,5 +1,7 @@
 import { useActiveRow } from "../contexts/useActiveRow";
 import { useWordStore } from "../contexts/useWordStore";
+import { useGameState } from "../contexts/useGameState";
+import { NUMBER_OF_TRIES } from "./GameLayout";
 
 const Keyboard = () => {
   const keyLayout: string[][] = [
@@ -8,8 +10,24 @@ const Keyboard = () => {
     ["Borrar", "Z", "X", "C", "V", "B", "N", "M", "Enviar"],
   ];
 
-  const { popOnWordAttemp, pushOnWordAttemp, setWordAttemp } = useWordStore();
-  const { nextActiveRow } = useActiveRow();
+  const { word, wordAttemp, popOnWordAttemp, pushOnWordAttemp, setWordAttemp } =
+    useWordStore();
+  const { activeRow, nextActiveRow } = useActiveRow();
+
+  const { setGameState } = useGameState();
+
+  const checkWord = () => {
+    const wordToCheck = wordAttemp.join("");
+
+    if (wordToCheck === word) {
+      setGameState("win");
+    } else if (activeRow === NUMBER_OF_TRIES - 1) {
+      setGameState("lose");
+    } else {
+      setWordAttemp();
+      nextActiveRow();
+    }
+  };
 
   const hangleClick = async (keyboardKey: string) => {
     switch (keyboardKey) {
@@ -17,8 +35,7 @@ const Keyboard = () => {
         popOnWordAttemp();
         break;
       case "Enviar":
-        setWordAttemp();
-        nextActiveRow();
+        checkWord();
         break;
       default:
         pushOnWordAttemp(keyboardKey);
