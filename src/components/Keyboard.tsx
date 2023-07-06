@@ -49,15 +49,15 @@ const Keyboard = () => {
 
   const setWin = () => {
     incrementCounter();
-    resetMissedLetters();
-    resetHittedLettersWithGoodPosition();
-    resetHittedLettersWithBadPosition();
     setGameState("win");
   };
 
   const checkWord = () => {
     const wordToCheck = wordAttemp.join("");
     if (wordToCheck === word) {
+      resetMissedLetters();
+      resetHittedLettersWithGoodPosition();
+      resetHittedLettersWithBadPosition();
       setWin();
     } else if (activeRow === NUMBER_OF_TRIES - 1) {
       setGameState("lose");
