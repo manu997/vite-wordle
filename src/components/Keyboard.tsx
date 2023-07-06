@@ -69,7 +69,7 @@ const Keyboard = () => {
       reset();
       setWin();
     } else {
-      const wordExists = await checkWordExistance.mutateAsync()
+      const wordExists = await checkWordExistance.mutateAsync();
       if (wordExists.n_results > 0) {
         if (activeRow === NUMBER_OF_TRIES - 1) {
           reset();
@@ -86,7 +86,7 @@ const Keyboard = () => {
           nextActiveRow();
         }
       } else {
-        toast.error("La palabra no existe");
+        toast.error("La palabra no existe", { position: "top-center" });
       }
     }
   };
