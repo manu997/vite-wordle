@@ -23,7 +23,7 @@ const Row = ({ index }: RowProps) => {
 
   const layout = useMemo(() => {
     return word.map((letter, i) => {
-      return <Cell key={i} letter={letter} index={index} />;
+      return <Cell key={i} letter={letter} row={index} col={i} />;
     });
   }, [word, activeRow]);
 

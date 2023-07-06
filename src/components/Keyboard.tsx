@@ -4,6 +4,9 @@ import { useGameState } from "../contexts/useGameState";
 import { NUMBER_OF_TRIES } from "./GameLayout";
 import { useWinCounter } from "../contexts/useWinCounter";
 import { useGameLetters } from "../contexts/useGameLetters";
+import { toast } from "react-toastify";
+import { useCheckWordExistance } from "../hooks/useCheckWordExistance";
+import { useState } from "react";
 
 const Keyboard = () => {
   const keyLayout: string[][] = [
@@ -12,6 +15,7 @@ const Keyboard = () => {
     ["Borrar", "Z", "X", "C", "V", "B", "N", "M", "Enviar"],
   ];
 
+  const [wordForChecking, setWordForChecking] = useState<string>("");
   const {
     missedLetters,
     hittedLettersWithBadPosition,
@@ -33,19 +37,7 @@ const Keyboard = () => {
 
   const { incrementCounter } = useWinCounter();
 
-  const checkKeyPosition = (keyboardKey: string) => {
-    const wordToArray = word.split("");
-    const keyPositionInWord = wordToArray.indexOf(keyboardKey);
-    const keyPositionInWordAttemp = wordAttemp.indexOf(keyboardKey);
-    if (keyPositionInWord === keyPositionInWordAttemp) {
-      if (hittedLettersWithBadPosition.includes(keyboardKey)) {
-        removeHittedLettersWithBadPosition(keyboardKey);
-      }
-      addHittedLettersWithGoodPosition(keyboardKey);
-    } else {
-      addHittedLettersWithBadPosition(keyboardKey);
-    }
-  };
+  const checkWordExistance = useCheckWordExistance(wordForChecking);
 
   const setWin = () => {
     incrementCounter();
@@ -58,24 +50,44 @@ const Keyboard = () => {
     resetHittedLettersWithBadPosition();
   };
 
-  const checkWord = () => {
+  const checkKeyPosition = (keyIndex: number, keyboardKey: string) => {
+    const wordToArray = word.split("");
+    if (wordToArray[keyIndex] === wordAttemp[keyIndex]) {
+      if (hittedLettersWithBadPosition[keyIndex] === keyboardKey) {
+        removeHittedLettersWithBadPosition(keyboardKey, keyIndex);
+      }
+      addHittedLettersWithGoodPosition(keyboardKey, keyIndex);
+    } else {
+      addHittedLettersWithBadPosition(keyboardKey, keyIndex);
+    }
+  };
+
+  const checkWord = async () => {
     const wordToCheck = wordAttemp.join("");
+    setWordForChecking(wordToCheck);
     if (wordToCheck === word) {
       reset();
       setWin();
-    } else if (activeRow === NUMBER_OF_TRIES - 1) {
-      reset();
-      setGameState("lose");
     } else {
-      wordAttemp.map((keyboardKey) => {
-        if (!word.includes(keyboardKey)) {
-          addMissedLetters(keyboardKey);
+      const wordExists = await checkWordExistance.mutateAsync()
+      if (wordExists.n_results > 0) {
+        if (activeRow === NUMBER_OF_TRIES - 1) {
+          reset();
+          setGameState("lose");
         } else {
-          checkKeyPosition(keyboardKey);
+          wordAttemp.map((keyboardKey, index) => {
+            if (!word.includes(keyboardKey)) {
+              addMissedLetters(keyboardKey);
+            } else {
+              checkKeyPosition(index, keyboardKey);
+            }
+          });
+          setWordAttemp();
+          nextActiveRow();
         }
-      });
-      setWordAttemp();
-      nextActiveRow();
+      } else {
+        toast.error("La palabra no existe");
+      }
     }
   };
 
@@ -85,7 +97,7 @@ const Keyboard = () => {
         popOnWordAttemp();
         break;
       case "Enviar":
-        checkWord();
+        await checkWord();
         break;
       default:
         pushOnWordAttemp(keyboardKey);
