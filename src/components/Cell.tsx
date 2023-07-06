@@ -12,7 +12,7 @@ const Cell = ({ letter, index }: CellProps) => {
   const { activeRow } = useActiveRow();
 
   useEffect(() => {
-    activeRow > index && letter !== "" && keyColor(letter);
+    activeRow - 1 === index && letter !== "" && keyColor(letter);
   }, [activeRow]);
 
   const {
