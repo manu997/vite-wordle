@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { useActiveRow } from "../contexts/useActiveRow";
 import { useWordStore } from "../contexts/useWordStore";
+import Cell from "./Cell";
 
 interface RowProps {
   index: number;
@@ -20,29 +21,13 @@ const Row = ({ index }: RowProps) => {
     }
   }, [wordAttemp]);
 
-  const Layout = useMemo(() => {
+  const layout = useMemo(() => {
     return word.map((letter, i) => {
-      return (
-        <div
-          key={i}
-          className={`flex justify-center items-center border-2 border-gray-500 w-full gap-2 text-4xl text-gray-100 font-semibold ${
-            activeRow === index &&
-            "border-[6px] border-gray-200 transition-all duration-300"
-          }`}
-        >
-          <span
-            className={`transition-all transform duration-200 ${
-              letter !== "" ? "3xl:scale-150 scale-125 opacity-100" : "opacity-0"
-            }`}
-          >
-            {letter}
-          </span>
-        </div>
-      );
+      return <Cell key={i} letter={letter} index={index} />;
     });
   }, [word, activeRow]);
 
-  return <div className="flex flex-row gap-1 md:gap-2">{Layout}</div>;
+  return <div className="flex flex-row gap-1 md:gap-2">{layout}</div>;
 };
 
 export default Row;

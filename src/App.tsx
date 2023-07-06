@@ -14,7 +14,6 @@ const App = () => {
 
   useEffect(() => {
     if (isSuccess) {
-      console.log(data)
       setWord(data);
       setWordAttemp();
     }

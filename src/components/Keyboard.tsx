@@ -3,7 +3,7 @@ import { useWordStore } from "../contexts/useWordStore";
 import { useGameState } from "../contexts/useGameState";
 import { NUMBER_OF_TRIES } from "./GameLayout";
 import { useWinCounter } from "../contexts/useWinCounter";
-import { useState } from "react";
+import { useGameLetters } from "../contexts/useGameLetters";
 
 const Keyboard = () => {
   const keyLayout: string[][] = [
@@ -12,11 +12,18 @@ const Keyboard = () => {
     ["Borrar", "Z", "X", "C", "V", "B", "N", "M", "Enviar"],
   ];
 
-  const [missedLetters, setMissedLetters] = useState<string[]>([]);
-  const [hittedLettersWithBadPosition, setHittedLettersWithBadPosition] =
-    useState<string[]>([]);
-  const [hittedLettersWithGoodPosition, setHittedLettersWithGoodPosition] =
-    useState<string[]>([]);
+  const {
+    missedLetters,
+    hittedLettersWithBadPosition,
+    hittedLettersWithGoodPosition,
+    addMissedLetters,
+    addHittedLettersWithBadPosition,
+    removeHittedLettersWithBadPosition,
+    addHittedLettersWithGoodPosition,
+    resetMissedLetters,
+    resetHittedLettersWithBadPosition,
+    resetHittedLettersWithGoodPosition,
+  } = useGameLetters();
 
   const { word, wordAttemp, popOnWordAttemp, pushOnWordAttemp, setWordAttemp } =
     useWordStore();
@@ -32,24 +39,19 @@ const Keyboard = () => {
     const keyPositionInWordAttemp = wordAttemp.indexOf(keyboardKey);
     if (keyPositionInWord === keyPositionInWordAttemp) {
       if (hittedLettersWithBadPosition.includes(keyboardKey)) {
-        setHittedLettersWithBadPosition((oldArray) =>
-          oldArray.filter((letter) => letter !== keyboardKey)
-        );
+        removeHittedLettersWithBadPosition(keyboardKey);
       }
-      setHittedLettersWithGoodPosition((oldArray) => [
-        ...oldArray,
-        keyboardKey,
-      ]);
+      addHittedLettersWithGoodPosition(keyboardKey);
     } else {
-      setHittedLettersWithBadPosition((oldArray) => [...oldArray, keyboardKey]);
+      addHittedLettersWithBadPosition(keyboardKey);
     }
   };
 
   const setWin = () => {
     incrementCounter();
-    setHittedLettersWithGoodPosition([]);
-    setHittedLettersWithBadPosition([]);
-    setMissedLetters([]);
+    resetMissedLetters();
+    resetHittedLettersWithGoodPosition();
+    resetHittedLettersWithBadPosition();
     setGameState("win");
   };
 
@@ -60,10 +62,9 @@ const Keyboard = () => {
     } else if (activeRow === NUMBER_OF_TRIES - 1) {
       setGameState("lose");
     } else {
-      console.log(`WordAttemp: ${wordAttemp}`);
       wordAttemp.map((keyboardKey) => {
         if (!word.includes(keyboardKey)) {
-          setMissedLetters((oldArray) => [...oldArray, keyboardKey]);
+          addMissedLetters(keyboardKey);
         } else {
           checkKeyPosition(keyboardKey);
         }
@@ -92,12 +93,13 @@ const Keyboard = () => {
       "bg-yellow-500": hittedLettersWithBadPosition.includes(keyboardKey),
       "bg-green-500": hittedLettersWithGoodPosition.includes(keyboardKey),
     };
-  
-    const [color] = Object.entries(colorMapping).find(([_, condition]) => condition) || ["bg-gray-200", true];
-  
+
+    const [color] = Object.entries(colorMapping).find(
+      ([_, condition]) => condition
+    ) || ["bg-gray-200", true];
+
     return color;
   };
-  
 
   return (
     <div className="grid grid-rows-3 grid-flow-col gap-2 h-[20vh] w-full">
