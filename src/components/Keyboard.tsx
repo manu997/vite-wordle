@@ -52,14 +52,19 @@ const Keyboard = () => {
     setGameState("win");
   };
 
+  const reset = () => {
+    resetMissedLetters();
+    resetHittedLettersWithGoodPosition();
+    resetHittedLettersWithBadPosition();
+  };
+
   const checkWord = () => {
     const wordToCheck = wordAttemp.join("");
     if (wordToCheck === word) {
-      resetMissedLetters();
-      resetHittedLettersWithGoodPosition();
-      resetHittedLettersWithBadPosition();
+      reset();
       setWin();
     } else if (activeRow === NUMBER_OF_TRIES - 1) {
+      reset();
       setGameState("lose");
     } else {
       wordAttemp.map((keyboardKey) => {
