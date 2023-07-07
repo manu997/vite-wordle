@@ -1,8 +1,11 @@
 import { create } from "zustand";
+import words from "../utils/words.json";
 
 interface WordState {
+  wordsSet: Set<string>;
   word: string;
   wordAttemp: Array<string>;
+  setWordsSet: () => void;
   setWord: (word: string) => void;
   setWordAttemp: () => void;
   pushOnWordAttemp: (letter: string) => void;
@@ -10,8 +13,10 @@ interface WordState {
 }
 
 export const useWordStore = create<WordState>()((set, get) => ({
+  wordsSet: new Set<string>(),
   word: "",
   wordAttemp: new Array<string>(),
+  setWordsSet: () => set({ wordsSet: new Set(words) }),
   setWord: (newWord) => set({ word: newWord.toUpperCase() }),
   setWordAttemp: () =>
     set({

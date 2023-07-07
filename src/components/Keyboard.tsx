@@ -5,8 +5,6 @@ import { NUMBER_OF_TRIES } from "./GameLayout";
 import { useWinCounter } from "../contexts/useWinCounter";
 import { useGameLetters } from "../contexts/useGameLetters";
 import { toast } from "react-toastify";
-import { useCheckWordExistance } from "../hooks/useCheckWordExistance";
-import { useState } from "react";
 
 const Keyboard = () => {
   const keyLayout: string[][] = [
@@ -15,7 +13,6 @@ const Keyboard = () => {
     ["Borrar", "Z", "X", "C", "V", "B", "N", "M", "Enviar"],
   ];
 
-  const [wordForChecking, setWordForChecking] = useState<string>("");
   const {
     missedLetters,
     hittedLettersWithBadPosition,
@@ -37,7 +34,7 @@ const Keyboard = () => {
 
   const { incrementCounter } = useWinCounter();
 
-  const checkWordExistance = useCheckWordExistance(wordForChecking);
+  const { wordsSet } = useWordStore();
 
   const setWin = () => {
     incrementCounter();
@@ -64,13 +61,11 @@ const Keyboard = () => {
 
   const checkWord = async () => {
     const wordToCheck = wordAttemp.join("");
-    setWordForChecking(wordToCheck);
     if (wordToCheck === word) {
       reset();
       setWin();
     } else {
-      const wordExists = await checkWordExistance.mutateAsync();
-      if (wordExists.n_results > 0) {
+      if (wordsSet.has(wordToCheck.toLowerCase())) {
         if (activeRow === NUMBER_OF_TRIES - 1) {
           reset();
           setGameState("lose");
@@ -92,6 +87,7 @@ const Keyboard = () => {
   };
 
   const handleClick = async (keyboardKey: string) => {
+    console.log(`word: ${word}`);
     switch (keyboardKey) {
       case "Borrar":
         popOnWordAttemp();

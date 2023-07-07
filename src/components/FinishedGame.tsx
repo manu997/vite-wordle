@@ -2,15 +2,13 @@ import { useMemo } from "react";
 import { useGameState } from "../contexts/useGameState";
 import { useWordStore } from "../contexts/useWordStore";
 import { useWinCounter } from "../contexts/useWinCounter";
-import { useQueryClient } from "@tanstack/react-query";
 import { useActiveRow } from "../contexts/useActiveRow";
 
 const FinishedGame = () => {
   const { gameState, setGameState } = useGameState();
-  const { word } = useWordStore();
+  const { word, wordsSet, setWord, setWordAttemp } = useWordStore();
   const { counter } = useWinCounter();
   const { resetActiveRow } = useActiveRow();
-  const queryClient = useQueryClient();
 
   const message = useMemo(() => {
     switch (gameState) {
@@ -24,7 +22,9 @@ const FinishedGame = () => {
   }, [gameState]);
 
   const newGame = () => {
-    queryClient.invalidateQueries(["word"]);
+    const wordsArray = Array.from(wordsSet);
+    setWord(wordsArray[Math.floor(Math.random() * wordsArray.length - 1)]);
+    setWordAttemp();
     resetActiveRow();
     setGameState("playing");
   };
