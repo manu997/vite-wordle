@@ -61,28 +61,38 @@ const Keyboard = () => {
 
   const checkWord = async () => {
     const wordToCheck = wordAttemp.join("");
-    if (wordToCheck === word) {
-      reset();
-      setWin();
-    } else {
-      if (wordsSet.has(wordToCheck.toLowerCase())) {
-        if (activeRow === NUMBER_OF_TRIES - 1) {
-          reset();
-          setGameState("lose");
-        } else {
-          wordAttemp.map((keyboardKey, index) => {
-            if (!word.includes(keyboardKey)) {
-              addMissedLetters(keyboardKey);
-            } else {
-              checkKeyPosition(index, keyboardKey);
-            }
-          });
-          setWordAttemp();
-          nextActiveRow();
-        }
+    if (wordToCheck.length === 5) {
+      if (wordToCheck === word) {
+        reset();
+        setWin();
       } else {
-        toast.error("La palabra no existe", { position: "top-center" });
+        if (wordsSet.has(wordToCheck.toLowerCase())) {
+          if (activeRow === NUMBER_OF_TRIES - 1) {
+            reset();
+            setGameState("lose");
+          } else {
+            wordAttemp.map((keyboardKey, index) => {
+              if (!word.includes(keyboardKey)) {
+                addMissedLetters(keyboardKey);
+              } else {
+                checkKeyPosition(index, keyboardKey);
+              }
+            });
+            setWordAttemp();
+            nextActiveRow();
+          }
+        } else {
+          toast.error("La palabra no existe", {
+            position: "top-center",
+            autoClose: 2000,
+          });
+        }
       }
+    } else {
+      toast.error("La palabra debe tener 5 letras", {
+        position: "top-center",
+        autoClose: 2000,
+      });
     }
   };
 
